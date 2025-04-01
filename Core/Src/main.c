@@ -22,6 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "bme280.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,6 +45,10 @@
 I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
+
+float temperature = 0.0f;
+float humidity = 0.0f;
+float pressure = 0.0f;
 
 /* USER CODE END PV */
 
@@ -91,12 +97,23 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
+  BME280_init(&hi2c1);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  BME280_read_data(&hi2c1);
+      int16_t temp_int = BME280_get_temperature_integer();
+      int16_t temp_frac = BME280_get_temperature_fraction();
+      int16_t pres_int = BME280_get_pressure_integer();
+      int16_t pres_frac = BME280_get_pressure_fraction();
+      int16_t hum_int = BME280_get_humidity_integer();
+      int16_t hum_frac = BME280_get_humidity_fraction();
+	  HAL_Delay(1000);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
