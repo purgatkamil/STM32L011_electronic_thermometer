@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 
 #include "bme280.h"
+#include "oled.h"
 
 /* USER CODE END Includes */
 
@@ -46,10 +47,6 @@ I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
 
-float temperature = 0.0f;
-float humidity = 0.0f;
-float pressure = 0.0f;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -62,6 +59,53 @@ static void MX_I2C1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+void print_sensor_values(int16_t temp_i, int16_t temp_f,
+                              int16_t hum_i,  int16_t hum_f,
+                              int16_t press_i, int16_t press_f) {
+    char line[22];
+    uint8_t idx;
+
+    idx = 0;
+    if (temp_i < 0) { line[idx++] = '-'; temp_i = -temp_i; }
+    if (temp_i >= 100) line[idx++] = '0' + (temp_i / 100);
+    if (temp_i >= 10)  line[idx++] = '0' + ((temp_i / 10) % 10);
+    line[idx++] = '0' + (temp_i % 10);
+    line[idx++] = '.';
+    line[idx++] = '0' + (temp_f / 10);
+    line[idx++] = '0' + (temp_f % 10);
+    line[idx++] = '\x60';
+    line[idx++] = 'C';
+    line[idx] = '\0';
+    oled_print(0, 0, line);
+
+    idx = 0;
+    if (hum_i >= 100) line[idx++] = '0' + (hum_i / 100);
+    if (hum_i >= 10)  line[idx++] = '0' + ((hum_i / 10) % 10);
+    line[idx++] = '0' + (hum_i % 10);
+    line[idx++] = '.';
+    line[idx++] = '0' + (hum_f / 10);
+    line[idx++] = '0' + (hum_f % 10);
+    line[idx++] = '%';
+    line[idx++] = 'R';
+    line[idx] = '\0';
+    oled_print(0, 1, line);
+
+    idx = 0;
+    if (press_i >= 1000) line[idx++] = '0' + (press_i / 1000);
+    if (press_i >= 100)  line[idx++] = '0' + ((press_i / 100) % 10);
+    if (press_i >= 10)   line[idx++] = '0' + ((press_i / 10) % 10);
+    line[idx++] = '0' + (press_i % 10);
+    line[idx++] = '.';
+    line[idx++] = '0' + (press_f / 10);
+    line[idx++] = '0' + (press_f % 10);
+    line[idx++] = 'h';
+    line[idx++] = 'P';
+    line[idx++] = 'a';
+    line[idx] = '\0';
+    oled_print(0, 2, line);
+}
+
 
 /* USER CODE END 0 */
 
@@ -98,6 +142,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   BME280_init(&hi2c1);
+  oled_init();
+  oled_clear();
 
   /* USER CODE END 2 */
 
@@ -106,13 +152,21 @@ int main(void)
   while (1)
   {
 	  BME280_read_data(&hi2c1);
-      int16_t temp_int = BME280_get_temperature_integer();
-      int16_t temp_frac = BME280_get_temperature_fraction();
-      int16_t pres_int = BME280_get_pressure_integer();
-      int16_t pres_frac = BME280_get_pressure_fraction();
-      int16_t hum_int = BME280_get_humidity_integer();
-      int16_t hum_frac = BME280_get_humidity_fraction();
-	  HAL_Delay(1000);
+
+      oled_clear();
+
+      print_sensor_values(
+          BME280_get_temperature_integer(),
+          BME280_get_temperature_fraction(),
+          BME280_get_humidity_integer(),
+          BME280_get_humidity_fraction(),
+          BME280_get_pressure_integer(),
+          BME280_get_pressure_fraction()
+      );
+
+      oled_display();
+
+      HAL_Delay(1000);
 
     /* USER CODE END WHILE */
 
