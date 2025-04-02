@@ -63,16 +63,44 @@ void oled_display(void) {
 }
 
 void oled_putc(uint8_t x, uint8_t y, char c) {
-    if (c < 32 || c > 127) c = '?';
     if (x >= OLED_WIDTH || y >= OLED_PAGES) return;
 
-    uint16_t index = y * OLED_WIDTH + x;
-    for (uint8_t i = 0; i < 5; i++) {
-        if (index + i < sizeof(buffer))
-            buffer[index + i] = font5x8[c - 32][i];
+    uint8_t index;
+    switch (c) {
+        case ' ': index = 0; break;
+        case '.': index = 1; break;
+        case ',': index = 2; break;
+        case '0': index = 3; break;
+        case '1': index = 4; break;
+        case '2': index = 5; break;
+        case '3': index = 6; break;
+        case '4': index = 7; break;
+        case '5': index = 8; break;
+        case '6': index = 9; break;
+        case '7': index = 10; break;
+        case '8': index = 11; break;
+        case '9': index = 12; break;
+        case '%': index = 13; break;
+        case 'h': index = 14; break;
+        case 'P': index = 15; break;
+        case 'a': index = 16; break;
+        case 'R': index = 17; break;
+        case 'C': index = 18; break;
+        case 'H': index = 19; break;
+        case '\x60':
+        case 0xB0:
+            index = 20; break;
+        default:
+            return;
     }
-    if (index + 5 < sizeof(buffer))
-        buffer[index + 5] = 0x00; // spacing
+
+    uint16_t buf_index = y * OLED_WIDTH + x;
+    for (uint8_t i = 0; i < 5; i++) {
+        if (buf_index + i < sizeof(buffer))
+            buffer[buf_index + i] = font5x8[index][i];
+    }
+    if (buf_index + 5 < sizeof(buffer))
+        buffer[buf_index + 5] = 0x00;
 }
 
 void oled_print(uint8_t x, uint8_t y, const char *str) {
