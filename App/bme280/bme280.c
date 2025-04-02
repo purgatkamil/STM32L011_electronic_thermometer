@@ -18,6 +18,10 @@
  * - Compensation algorithms follow Bosch-recommended fixed-point integer versions,
  *   ensuring accuracy while remaining efficient on low-power MCUs.
  * 
+ * - A manual pressure offset is applied to the 
+ *   final pressure result. This was added during testing due to consistently high 
+ *   readings from the sensor, which appeared to be ~200 hPa above expected values.
+ * 
  * This driver is suitable for applications where memory and power efficiency are
  * prioritized over abstraction or extensibility.
  */
