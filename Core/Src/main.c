@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 
 #include "bme280.h"
+#include "oled.h"
 
 /* USER CODE END Includes */
 
@@ -98,6 +99,17 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   BME280_init(&hi2c1);
+
+  // === Inicjalizacja OLED ===
+  oled_init();
+
+  // === Czyszczenie i tekst ===
+  oled_clear();
+  oled_print(0, 0, "STM32 + OLED");
+  oled_print(0, 1, "Hello World!");
+
+  // === Wysłanie bufora ===
+  oled_display();
 
   /* USER CODE END 2 */
 
