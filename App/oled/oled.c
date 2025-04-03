@@ -97,7 +97,7 @@ void oled_putc(uint8_t x, uint8_t y, char c) {
     uint16_t buf_index = y * OLED_WIDTH + x;
     for (uint8_t i = 0; i < 5; i++) {
         if (buf_index + i < sizeof(buffer))
-            buffer[buf_index + i] = font5x8[index][i];
+            buffer[buf_index + i] = font10x16[index][i];
     }
     if (buf_index + 5 < sizeof(buffer))
         buffer[buf_index + 5] = 0x00;
